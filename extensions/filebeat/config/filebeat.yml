@@ -2,25 +2,47 @@
 ## https://github.com/elastic/beats/blob/master/deploy/docker/filebeat.docker.yml
 #
 
-filebeat.config:
-  modules:
-    path: ${path.config}/modules.d/*.yml
-    reload.enabled: false
+#f//ilebeat.config:
+  #modules:
+    #path: ${path.config}/modules.d/*.yml
+    #reload.enabled: true
 
-filebeat.autodiscover:
-  providers:
+#filebeat.autodiscover:
+  #providers:
     # The Docker autodiscover provider automatically retrieves logs from Docker
     # containers as they start and stop.
-    - type: docker
-      hints.enabled: true
+    # type: docker
+    # hints.enabled: true
+
+filebeat.inputs:
+- type: container  
+  paths: 
+    - '/var/lib/docker/containers/adfe8dcc7e2cca1ded87d5e605dda5c7f2663c3ee808d7f8afd8e44efacec955/adfe8dcc7e2cca1ded87d5e605dda5c7f2663c3ee808d7f8afd8e44efacec955-json.log'
+- type: container
+  paths: 
+    - '/var/lib/docker/containers/da727d3d61aa7c0cff59356c5406bdf6cf60b645feb2a0b2d4093b9bb43fde23/da727d3d61aa7c0cff59356c5406bdf6cf60b645feb2a0b2d4093b9bb43fde23-json.log'    
+
 
 processors:
-  - add_cloud_metadata: ~
+  #- add_cloud_metadata: 
+    #host: "unix:///var/run/docker.sock"
 
-output.elasticsearch:
-  hosts: ['http://elasticsearch:9200']
-  username: elastic
-  password: ${ELASTIC_PASSWORD}
+  - decode_json_fields:
+      fields: ["message"]
+      target: "json"
+      overwrite_keys: true
+
+
+output.logstash:
+  hosts: ['logstash:5044']
+  #username: elastic
+  #password: ${ELASTIC_PASSWORD}
+  #indices:
+    #- index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+
+logging.json: true
+logging.metrics.enabled: false
+
 
 ## HTTP endpoint for health checking
 ## https://www.elastic.co/guide/en/beats/filebeat/current/http-endpoint.html

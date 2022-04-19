@@ -1,0 +1,24 @@
+#filter {
+#	grok {
+#		patterns_dir => ["./patterns"]
+# 		match => [ 'message', '%{DATESTAMP:timestamp} %{LOGLEVEL:type} %{NUMBER:int} %{NOTSPACE:uid} %{NOTSPACE:uid} %{NOTSPACE:uid} %{DATA: message} %{WORD:method} %{GREEDYDATA:message}' ]
+#		overwrite => [ 'message' ]
+#		add_tag => 'GROKED'
+#	}
+#
+#	if [method] != 'GET'{
+#		drop { }
+#	} else if [message] == '"/portal/paineis/62136f7f0d45383710833971", parameters={}'{
+#		mutate {
+#			add_field => {
+#				'Painel Tutorial' => 'Painel Tutorial' 
+#			}
+#		}
+#	} else if [message] == '"/portal/paineis/62192b2a8d9fd6549d461694", parameters={}'{
+#		mutate {
+#			add_field => {
+#				'Painel de Treinamento' => 'Painel de Treinamento' 
+#			}
+#		}
+#	}
+#}
